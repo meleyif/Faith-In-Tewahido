@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=JetBrains+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-forest: #1a2e1a;
+  --color-deep: #0f1a0f;
+  --color-gold: #c9a84c;
+  --color-gold-light: #e8c96a;
+  --color-gold-dim: rgba(201,168,76,0.15);
+  --color-gold-border: rgba(201,168,76,0.3);
+  --color-white: #f4f1eb;
+  --color-muted: rgba(244,241,235,0.55);
+  --color-layer1: #1e2e1e;
+  --color-layer2: #243024;
+  --color-layer3: #2a382a;
+  --font-serif: 'Playfair Display', serif;
+  --font-sans: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-deep);
+    color: var(--color-white);
+    font-family: var(--font-sans);
+    font-weight: 300;
+  }
+}
+
+/* Noise texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.6;
+}
+
+/* Background Cross Watermark */
+body::after {
+  content: '✞';
+  position: fixed;
+  right: -80px;
+  bottom: -80px;
+  font-size: 400px;
+  color: rgba(201,168,76,0.03);
+  pointer-events: none;
+  z-index: 0;
+  font-family: var(--font-serif);
+}
+
+.glow-border {
+  transition: border-color 0.3s;
+}
+.glow-border:hover {
+  border-color: var(--color-gold);
+}
