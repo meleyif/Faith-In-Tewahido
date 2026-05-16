@@ -1,19 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { Search, Filter, Lock } from "lucide-react";
+import { Search, Filter, Lock, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function CatalogPage() {
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetch("/api/v1/courses")
       .then((res) => res.json())
       .then((data) => {
-        if (data.courses) setCourses(data.courses);
+        if (data.courses) {
+            setCourses(data.courses.filter((c: any) => c.status === 'published'));
+        }
         setLoading(false);
       });
   }, []);
+
+  const filteredCourses = courses.filter(c => 
+    c.title_en.toLowerCase().includes(search.toLowerCase()) || 
+    c.title_am.includes(search)
+  );
 
   return (
     <div className="space-y-12 animate-fade-in">
@@ -36,6 +44,8 @@ export default function CatalogPage() {
             <input 
               type="text" 
               placeholder="Search courses..." 
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               className="bg-layer2 border border-gold-border pl-10 pr-4 py-2 font-mono text-xs text-white placeholder:text-muted/50 focus:outline-none focus:border-gold transition-colors w-full md:w-64"
             />
           </div>
@@ -51,9 +61,13 @@ export default function CatalogPage() {
             <div key={i} className="animate-pulse bg-layer1 h-[320px] border border-gold-border"></div>
           ))}
         </div>
+      ) : filteredCourses.length === 0 ? (
+        <div className="text-center font-mono text-muted py-20 bg-layer1 border border-gold-border">
+          No published courses found matching your search.
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {courses.map((course) => (
+          {filteredCourses.map((course) => (
             <Link to={`/course/${course.id}`} key={course.id} className="bg-layer1 border border-gold-border flex flex-col group overflow-hidden hover:border-gold transition-colors">
               <div className="aspect-video w-full bg-layer2 relative overflow-hidden">
                 <img src={course.thumbnail_url} alt={course.title_en} className="object-cover w-full h-full opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" />
@@ -69,7 +83,7 @@ export default function CatalogPage() {
                 <h4 className="font-sans text-sm text-gold mb-4">{course.title_am}</h4>
                 <p className="font-mono text-xs text-muted leading-relaxed flex-1">{course.description_en}</p>
                 <div className="mt-6 pt-4 border-t border-gold-border flex items-center justify-between font-mono text-[10px] text-muted">
-                  <span>8 Modules</span>
+                  <span>{course.modules?.length || 0} Modules</span>
                   <span className="text-gold flex items-center gap-1 group-hover:underline underline-offset-4">Learn More →</span>
                 </div>
               </div>
